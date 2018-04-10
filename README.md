@@ -4,4 +4,5 @@ Generate avatars in 1 script. (use get vars to generate an avatar (once generate
 
 ![](http://avatar.warriordudimanche.net/?str=github&sz=128)
 
+![](http://avatar.warriordudimanche.net/?str=Ror&style=dot)
 See [my blog (FR)](http://warriordudimanche.net/article793/ror-un-generateur-d-avatars-auto-hebergeable-en-un-script) for more information
