@@ -17,6 +17,7 @@
 # ?sz= [integer] avatar's size (opt.) 
 # ?c1= [string] avatar's color (opt.)
 # ?c2= [string] avatar's background color (opt.)
+# ?style=dot (opt.) square by default
 
 ###############################
 #                             #
@@ -49,9 +50,10 @@ if (!empty($_GET['sz'])){
 	$size=intval(strip_tags($_GET['sz']));
 }
 if (empty($size)){$size=128;}
+
+$dot=!empty($_GET['style'])&&$_GET['style']=='dot';
 $avatar_filename='x'.$size.$avatar_filename.'.png';
 $dotsize=$size/9;
-
 
 ##################################################################
 #                                                                #
@@ -77,13 +79,17 @@ function separatRGB($color){
     return $RGB;
 }
 
-function drawLine($linenb,$pattern,$size){
+function drawLine($linenb,$pattern,$size,$dots=false){
 	global $image,$couleur_avatar,$couleur_fond;
 	for ($i=0;$i<9;$i++){
 		$x=$i*$size;
 		$y=$linenb*$size;
 		if ($pattern[$i]==1){
-			imagefilledrectangle ( $image , $x,$y  , $x+$size ,$y+$size , $couleur_avatar );
+			if (!$dots){
+				imagefilledrectangle ( $image , $x,$y  , $x+$size ,$y+$size , $couleur_avatar );
+			}else{
+				imagefilledellipse ( $image , $x+($size/2),$y+($size/2)  , $size ,$size , $couleur_avatar );
+			}
 		}else{
 			imagefilledrectangle ( $image , $x,$y  , $x+$size ,$y+$size ,$couleur_fond);
 		}
@@ -106,16 +112,17 @@ function drawLine($linenb,$pattern,$size){
 if (!empty($_GET['str'])){
 	$h1=hash('crc32',$_GET['str']);
 	$h2=hash('crc32b',$_GET['str']);
+	$d=($dot===true)?'dot':'';
 
 	if (empty($c1)){$c1 = separatRGB($h1);}
 	if (empty($c2)){$c2 = separatRGB($h2);}
 
-	$s=$h1.$h2[0];
+	$s=$h1.$h2[0].$d;
 	$file='avatars/'.$s.$avatar_filename;
+
 	if (is_file($file)){
 		header ("Content-type: image/png");
 		exit(file_get_contents($file));
-		
 	}
 
 	$image = @ImageCreate ($size, $size) or die ("Erreur lors de la création de l'image");
@@ -134,7 +141,7 @@ if (!empty($_GET['str'])){
 	
 	
 	for ($i=0;$i<9;$i++){
-		drawLine($i,$a[$s[$i]],$dotsize);
+		drawLine($i,$a[$s[$i]],$dotsize,$dot);
 	}
 
 	header ("Content-type: image/png");
